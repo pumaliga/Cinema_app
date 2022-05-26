@@ -1,0 +1,17 @@
+.day-filter{
+    display: flex;
+}
+
+.movie-list{
+    display: flex;
+    margin: 20px 0;
+}
+
+.movie-item{
+    width: 33%;
+}
+
+.img-promo{
+    width: 300px;
+    height: 300px;
+}

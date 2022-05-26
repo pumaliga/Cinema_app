@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <a href="{% url 'index' %}">Home page</a>
+
+    {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+            <span><b>{{ message }}</b></span>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form class="create-movie" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="main-button" type="submit" value="Create">
+    </form>
+{% endblock %}

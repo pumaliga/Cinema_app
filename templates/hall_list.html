@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="{% url 'index' %}">Home page</a>
+
+    {% for hall in cinemahall_list %}
+        <p>Name cinema hall: {{ hall.hall_name }}</p>
+        <p>Number of seats: {{ hall.number_of_seats }}</p>
+
+        {% if user.is_superuser %}
+            <form method="get" action="{% url 'update_hall' hall.pk %}">
+                <input type="submit" value="Update Movie">
+            </form>
+        {% endif %}
+        <br>
+    {% endfor %}
+{% endblock %}

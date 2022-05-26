@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load cinema_tags %}
+
+{% block content %}
+
+    <div class="container">
+        <div>
+            <span><a href="{% url 'logout' %}">Logout</a></span>
+            <span><a href="{% url 'purchases' %}">Purchases</a></span>
+            {% if user.is_superuser %}
+                <span><a href="{% url 'hall_list' %}">Hall list</a> </span>
+                <span><a href="{% url 'create_hall' %}">Create hall</a></span>
+                <span><a href="{% url 'create_movie' %}">Create movie</a></span>
+            {% endif %}
+
+            <p>
+                Movie session:
+            </p>
+        </div>
+
+        <div class="day-filter">
+            <div>
+                <form method="get" action="{% url 'index' %}">
+                    <input type="hidden" name="show_date" value="Today">
+                    <input type="submit" value="Today">
+                </form>
+            </div>
+            <div>
+                <form method="get" action="{% url 'index' %}">
+                    <input type="hidden" name="show_date" value="Tomorrow">
+                    <input type="submit" value="Tomorrow">
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <form method="get" action="{% url 'index' %}">
+                {{ sort_form }}
+                <input type="hidden" name="show_date" value="{{ day }}">
+                <input type="submit" value="Ок">
+            </form>
+        </div>
+
+        <div>
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <span><b>{{ message }}</b></span>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="movie-list">
+            {% for obj in movieshow_list %}
+                <div class="movie-item">
+                    <img class="img-promo" src="{{ obj.image.url }}">
+                <p>Название фильма: {{ obj.movie_name }}</p>
+                <p>Зал: {{ obj.cinema_hall }}</p>
+                <p>Цена билета: {{ obj.ticket_price }}</p>
+                <p>Время сенса: {{ obj.start_time }} - {{ obj.finish_time }}</p>
+                <p>Дата сеанса: {{ obj.start_date }} - {{ obj.finish_date }}</p>
+                <p>Количество свободных мест: {% call_method_get_tickets_count obj 'get_tickets_count' date %}</p>
+
+                    <form method="post" action="{% url 'ticket_buy' %}">
+                        {% csrf_token %}
+                        <div>
+                            {{ buy_ticket_form }}
+                        </div>
+                        <input type="hidden" name="date-buy" value="{{ date }}">
+                        <input type="hidden" name="movie-id" value={{ obj.pk }}>
+                        <input type="hidden" name="tickets_left"
+                                       value="{% call_method_get_tickets_count obj 'get_tickets_count' date %}">
+                        <div>
+                            <input type="submit" value="Buy ticket">
+                        </div>
+                    </form>
+                    {% if user.is_superuser %}
+                        <form method="get" action="{% url 'update_movie' obj.pk %}">
+                            <input type="submit" value="Update movie">
+                        </form>
+                    {% endif %}
+                </div>
+
+                <br>
+            {% endfor %}
+        </div>
+
+        <div>
+            <div>
+                {% if page_obj.has_previous %}
+                    <form method="get" action="?page={{ page_obj.previous_page_number }}">
+                        <input type="hidden" name="show_date" value="{{ day }}">
+                        <input type="hidden" name="filter_by" value="{{ filter }}">
+                        <input type="hidden" name="page" value="{{ page_obj.previous_page_number }}">
+                        <input type="submit" value="previous">
+                    </form>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <form method="get" action="?page={{ page_obj.paginator.num_pages }}">
+                        <input type="hidden" name="show_date" value="{{ day }}">
+                        <input type="hidden" name="filter_by" value="{{ filter }}">
+                        <input type="hidden" name="page" value="{{ page_obj.paginator.num_pages }}">
+                        <input type="submit" value="last">
+                    </form>
+
+                    <form method="get" action="?page={{ page_obj.next_page_number }}">
+                        <input type="hidden" name="show_date" value="{{ day }}">
+                        <input type="hidden" name="filter_by" value="{{ filter }}">
+                        <input type="hidden" name="page" value="{{ page_obj.next_page_number }}">
+                        <input type="submit" value="next">
+                    </form>
+                {% endif %}
+
+            </div>
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        </div>
+
+    </div>
+{% endblock %}

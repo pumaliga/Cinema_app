@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a href="{% url 'index' %}">Home page</a>
+
+    <div>
+        <p><b>Hello {{ request.user }}!</b></p>
+        <p>The total amount of your purchases: {{ all_purchases }}</p>
+    </div>
+
+    <div>
+        <br>
+        {% for obj in object_list %}
+            <p>Name movie: {{ obj.movie_show.movie_name }}</p>
+            <p>Number of tickets: {{ obj.number_of_ticket }}</p>
+            <p>Date: {{ obj.date }}</p>
+            <p>Total purchase amount: {{ obj.get_purchase_amount }}</p>
+        {% endfor %}
+    </div>
+
+        <div>
+            <div>
+                {% if page_obj.has_previous %}
+                    <form method="get" action="?page={{ page_obj.previous_page_number }}">
+                        <input type="hidden" name="page" value="{{ page_obj.previous_page_number }}">
+                        <input type="submit" value="previous">
+                    </form>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <form method="get" action="?page={{ page_obj.paginator.num_pages }}">
+                        <input type="hidden" name="page" value="{{ page_obj.paginator.num_pages }}">
+                        <input type="submit" value="last">
+                    </form>
+
+                    <form method="get" action="?page={{ page_obj.next_page_number }}">
+                        <input type="hidden" name="page" value="{{ page_obj.next_page_number }}">
+                        <input type="submit" value="next">
+                    </form>
+                {% endif %}
+
+            </div>
+        </div>
+    <span class="current">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+{% endblock %}

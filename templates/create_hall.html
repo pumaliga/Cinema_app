@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <a href="{% url 'index' %}">Home page</a>
+
+    <form class="create-hall" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="main-button" type="submit" value="Create">
+    </form>
+{% endblock %}
